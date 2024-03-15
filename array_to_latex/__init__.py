@@ -17,9 +17,9 @@ import numpy as _np
 import pandas as _pd
 
 
-def to_clp(a, frmt='{:1.2f}', arraytype='bmatrix', imstring='j'):
+def to_clp(a, frmt='{:1.2f}', arraytype='bmatrix', imstring='j', caption: str = None, reference: str = None):
     r"""
-    Return a LaTeX array to the clipboard given a numpy array.
+    Return a LaTeX array the the clipboard given a numpy array.
 
     Parameters
     ----------
@@ -62,8 +62,8 @@ def to_clp(a, frmt='{:1.2f}', arraytype='bmatrix', imstring='j'):
               'means to use this function')
 
 
-def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix', nargout=0,
-                       imstring='j', row=True, mathform=True):
+def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix',
+                       imstring='j', row=True, mathform=True, caption: str = None, reference: str = None):
     r"""Return a LaTeX array given a numpy array.
 
     Parameters
@@ -138,6 +138,8 @@ def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix', nargout=0,
         arrayformat = arrayformat[:-1] + '}'
 
     out = r'\begin{' + arraytype + '}' + arrayformat + '\n'
+    if caption is not None:
+        out += r'\caption{' + caption + '}\n'
     for i in _np.arange(a.shape[0]):
         out = out + ' '
         for j in _np.arange(a.shape[1]):
@@ -169,7 +171,10 @@ def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix', nargout=0,
         out = out[:-3]
         out = out + '\\\\\n'
 
-    out = out[:-3] + '\n' + r'\end{' + arraytype + '}'
+    out = out[:-3]
+    if reference is not None:
+        out += '\n'r'\ref{' + reference + '}'
+    out += '\n' + r'\end{' + arraytype + '}'
 
     return out
 
@@ -177,10 +182,9 @@ def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix', nargout=0,
 def _dataframetolatex(df,
                       frmt='{:6.2f}',
                       arraytype='tabular',
-                      nargout=0,
                       imstring='j',
                       row=True,
-                      mathform=True):
+                      mathform=True, caption: str = None, reference: str = None):
     r"""
     Return a LaTeX array given a Pandas DataFrame array.
 
@@ -239,6 +243,8 @@ def _dataframetolatex(df,
     rows = df.transpose().columns
     a = _np.array(df)
     out = r'\begin{' + arraytype + '}'
+    if caption is not None:
+        out += r'\caption{' + caption + '}\n'
 
     if arraytype == 'tabular':
         out += r'{l'
@@ -289,14 +295,19 @@ def _dataframetolatex(df,
 
     if arraytype == 'tabular':
         out += '\\bottomrule\n'
+        if reference is not None:
+            out += r'\ref{' + reference + '}\n'
         out += r'\end{' + arraytype + '}'
     else:
-        out = out[:-3] + '\n' + r'\end{' + arraytype + '}'
+        out = out[:-3] + '\n'
+        if reference is not None:
+            out += r'\ref{' + reference + '}\n'
+        out += r'\end{' + arraytype + '}'
 
     return out
 
 def to_ltx(a, frmt='{:1.2f}', arraytype=None, nargout=0,
-           imstring='j', row=True, mathform=True, print_out=True):
+           imstring='j', row=True, mathform=True, print_out=True, caption: str = None, reference: str = None):
     r"""
     Print or return a LaTeX array given a numpy array or Pandas dataframe.
 
@@ -359,15 +370,15 @@ def to_ltx(a, frmt='{:1.2f}', arraytype=None, nargout=0,
         if arraytype is None:
             arraytype = 'bmatrix'
         latex = _numpyarraytolatex(a, frmt=frmt, arraytype=arraytype,
-                                   nargout=nargout, imstring=imstring,
-                                   row=row, mathform=mathform)
+                                   imstring=imstring,
+                                   row=row, mathform=mathform, caption=caption, reference=reference)
 
     elif isinstance(a, _pd.core.frame.DataFrame):
 
         if arraytype is None:
             arraytype = 'tabular'
         latex = _dataframetolatex(a, frmt=frmt, arraytype=arraytype,
-                                  nargout=nargout, imstring=imstring)
+                                  imstring=imstring, caption=caption, reference=reference)
     else:
         raise TypeError("Argument should be a "
                         "numpy array or a pandas DataFrame.")
