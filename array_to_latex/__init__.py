@@ -17,7 +17,7 @@ import numpy as _np
 import pandas as _pd
 
 
-def to_clp(a, frmt='{:1.2f}', arraytype='bmatrix', imstring='j', caption: str = None, reference: str = None):
+def to_clp(a, frmt='{:1.2f}', arraytype='bmatrix', imstring='j', caption: str = None, label: str = None):
     r"""
     Return a LaTeX array the the clipboard given a numpy array.
 
@@ -63,7 +63,7 @@ def to_clp(a, frmt='{:1.2f}', arraytype='bmatrix', imstring='j', caption: str = 
 
 
 def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix',
-                       imstring='j', row=True, mathform=True, caption: str = None, reference: str = None):
+                       imstring='j', row=True, mathform=True, caption: str = None, label: str = None):
     r"""Return a LaTeX array given a numpy array.
 
     Parameters
@@ -172,8 +172,8 @@ def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix',
         out = out + '\\\\\n'
 
     out = out[:-3]
-    if reference is not None:
-        out += '\n'r'\ref{' + reference + '}'
+    if label is not None:
+        out += '\n'r'\ref{' + label + '}'
     out += '\n' + r'\end{' + arraytype + '}'
 
     return out
@@ -184,7 +184,7 @@ def _dataframetolatex(df,
                       arraytype='tabular',
                       imstring='j',
                       row=True,
-                      mathform=True, caption: str = None, reference: str = None):
+                      mathform=True, caption: str = None, label: str = None):
     r"""
     Return a LaTeX array given a Pandas DataFrame array.
 
@@ -295,19 +295,20 @@ def _dataframetolatex(df,
 
     if arraytype == 'tabular':
         out += '\\bottomrule\n'
-        if reference is not None:
-            out += r'\ref{' + reference + '}\n'
+        if label is not None:
+            out += r'\ref{' + label + '}\n'
         out += r'\end{' + arraytype + '}'
     else:
         out = out[:-3] + '\n'
-        if reference is not None:
-            out += r'\ref{' + reference + '}\n'
+        if label is not None:
+            out += r'\ref{' + label + '}\n'
         out += r'\end{' + arraytype + '}'
 
     return out
 
+
 def to_ltx(a, frmt='{:1.2f}', arraytype=None, nargout=0,
-           imstring='j', row=True, mathform=True, print_out=True, caption: str = None, reference: str = None):
+           imstring='j', row=True, mathform=True, print_out=True, caption: str = None, label: str = None):
     r"""
     Print or return a LaTeX array given a numpy array or Pandas dataframe.
 
@@ -371,14 +372,14 @@ def to_ltx(a, frmt='{:1.2f}', arraytype=None, nargout=0,
             arraytype = 'bmatrix'
         latex = _numpyarraytolatex(a, frmt=frmt, arraytype=arraytype,
                                    imstring=imstring,
-                                   row=row, mathform=mathform, caption=caption, reference=reference)
+                                   row=row, mathform=mathform, caption=caption, label=label)
 
     elif isinstance(a, _pd.core.frame.DataFrame):
 
         if arraytype is None:
             arraytype = 'tabular'
         latex = _dataframetolatex(a, frmt=frmt, arraytype=arraytype,
-                                  imstring=imstring, caption=caption, reference=reference)
+                                  imstring=imstring, caption=caption, label=label)
     else:
         raise TypeError("Argument should be a "
                         "numpy array or a pandas DataFrame.")
