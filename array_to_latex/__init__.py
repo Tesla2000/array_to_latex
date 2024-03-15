@@ -173,7 +173,7 @@ def _numpyarraytolatex(a, frmt='{:6.2f}', arraytype='bmatrix',
 
     out = out[:-3]
     if label is not None:
-        out += '\n'r'\ref{' + label + '}'
+        out += '\n'r'\label{' + label + '}'
     out += '\n' + r'\end{' + arraytype + '}'
 
     return out
@@ -296,12 +296,12 @@ def _dataframetolatex(df,
     if arraytype == 'tabular':
         out += '\\bottomrule\n'
         if label is not None:
-            out += r'\ref{' + label + '}\n'
+            out += r'\label{' + label + '}\n'
         out += r'\end{' + arraytype + '}'
     else:
         out = out[:-3] + '\n'
         if label is not None:
-            out += r'\ref{' + label + '}\n'
+            out += r'\label{' + label + '}\n'
         out += r'\end{' + arraytype + '}'
 
     return out
